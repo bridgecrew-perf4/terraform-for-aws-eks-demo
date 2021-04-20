@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+# metadata contains the labels
+metadata:
+  namespace: default
+  name: api-server-deployment
+  labels:
+      app: api-server  # this label is used by the serivce
+# sepcification contains the selectors
+spec:
+  replicas: 1
+  # match all the labels of pods
+  selector:
+    matchLabels:
+      app: api-server
+  # template = blueprint for the pods
+  template:
+      # specification of codehub pod with its own metadata and spec
+    metadata:
+      labels:
+        app: api-server  # this label is used by the service
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api-server-image
+          image: 750096361451.dkr.ecr.us-east-1.amazonaws.com/terraform-eks-demo-api-server # automatically attaches image with latest tag
+          imagePullPolicy: Always
+          resources:
+           limits:
+             memory: "200Mi"
+             cpu: "100m"
+           requests:
+             memory: "100Mi"
+             cpu: "50m"
+          env:
+          - name: BACKEND_URL
+            value: "http://backend-service"
+          - name: BACKEND_HEALTH_URL
+            value: "http://backend-service/health"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server-service
+  namespace: default
+spec:
+  selector:
+    app: api-server  # deployment and pod labels
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5000 # port in which the container codehub is running on
+  type: LoadBalancer

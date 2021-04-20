@@ -1,0 +1,5 @@
+.terraform
+kubeconfig_terraform-eks-demo
+terraform.tfstate
+.terraform.lock.hcl
+kubernetes-admin-rbac.yaml
