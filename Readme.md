@@ -176,7 +176,6 @@ Blocks in Terraform Files:
     ```
 2. Access EKS deployed workloads
 
-
     ```
     ## deployment
     $ kubectl get deploy 
