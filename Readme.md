@@ -19,6 +19,7 @@
     $ terraform -help
     ```
 2. Install kubectl CLI:
+
     First, download latest binary as follows:
     ```
     $ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -102,7 +103,6 @@
     ├── kubernetes.tf
     ├── outputs.tf
     ├── security-groups.tf
-    ├── terraform.tfstate
     ├── versions.tf
     └── vpc.tf
     ```
@@ -149,9 +149,76 @@ Blocks in Terraform Files:
     $ terraform show
     ```
 
-6. Destrory Infrastructure
+6. Cofigure kubectl
+
+    Now that you've provisioned your EKS cluster, you need to configure kubectl. Run the following command to retrieve the access credentials for your cluster and automatically configure kubectl.
+    ```
+    $ aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
+    ```
+
+
+7. Destrory Infrastructure
 
     The `terraform destroy` command destroys the infrastruce resources created using Terraform configuration. 
     ```
     $ terraform destroy 
+    ```
+
+## Microservice Deployment 
+1. Deploy Microservice Workloads
+    In `microservice` directory there are two services: `api-server service` and `backend service` where api-server is internet facing and backned-service is not and is accesibe through api-server only. 
+
+    Now, deploy the kubernetes deployments of the services using script as follows: 
+    ```
+    $ cd terraform-for-aws-eks-demo/
+    $ chmod +x deploy.sh
+    $ ./deploy.sh
+    ```
+2. Access EKS deployed workloads
+
+
+    ```
+    ## deployment
+    $ kubectl get deploy 
+    NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+    api-server-deployment   1/1     1            1           1m
+    backend-deployment      1/1     1            1           1m
+
+    ## pods
+    $ kubectl get pods
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    api-server-deployment-555497f94d-rx6nc   1/1     Running   0          1m
+    backend-deployment-77c5dd79b7-tsscl      1/1     Running   0          1m
+
+    ## services
+    $ kubectl get svc
+    NAME                 TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)        AGE
+    api-server-service   LoadBalancer   172.20.73.188   a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com   80:32284/TCP   1m
+    backend-service      ClusterIP      172.20.64.180   <none>                                                                    80/TCP         1m
+    kubernetes           ClusterIP      172.20.0.1      <none>                                                                    443/TCP        3m
+    ```
+    Now, verify the externel-ip associated with `api-server-service` to make sure it is working:
+    ```
+    $ telnet a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com 80
+    Trying 52.3.138.153...
+    Connected to a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com.
+    Escape character is '^]'.
+    ```
+    Finally, check apis of `apis-server`in paths:
+    ```
+    1. a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com
+    2. a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com/health
+    ```
+    And, then of `backend-server` service in following paths:
+    ```
+    1. a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com/backend
+    2. a9c0ec602bc8a40a39e0dff95e1d7136-1469137643.us-east-1.elb.amazonaws.com/backend/health
+    ```
+
+3. Delete Deployments
+
+    Now, destroy the kubernetes deployments of the services using script as follows: 
+    ```
+    $ chmod +x clean.sh
+    $ ./clean.sh
     ```
