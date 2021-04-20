@@ -6,6 +6,7 @@ variable "region" {
 
 provider "aws" {
   region = "us-east-1"
+  profile = "terraform-user"
 }
 
 data "aws_availability_zones" "available" {}
