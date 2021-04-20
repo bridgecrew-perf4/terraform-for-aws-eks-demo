@@ -6,7 +6,6 @@ module "eks" {
 
   tags = {
     Environment = "terraform-eks-demo"
-
   }
 
   vpc_id = module.vpc.vpc_id
