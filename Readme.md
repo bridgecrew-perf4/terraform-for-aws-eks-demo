@@ -1,5 +1,19 @@
 # Terraform for AWS EKS Cluster
 
+## Requirements
+The list of the resources to be created to run a AWS EKS Cluster inside a custom virtual private network include:
+
+1. VPC
+2. Internet Gateway associated with VPC
+3. Subnets(private and public) inside VPC
+4. Availability zone which is used to create our subnets(Optional)
+5. Route Table inside VPC (CIDR Block) that directs internet-bound traffic to the internet gateway
+6. Route table association(CIDR Block subest of VPC CIDR Block) with subnets(private and public)
+7. Security groups inside VPC to attach with woker node groups
+8. Tags attached to resources to track them. 
+9. To define node groups(pools) ec2 instace type, number, ami,etc
+10. ELB instance inside our public subnet 
+
 ## Prerequisties
 * [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started)
 * [Kubectl CLI](https://kubernetes.io/docs/tasks/tools/) 
