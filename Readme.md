@@ -14,6 +14,9 @@ The list of the resources to be created to run a AWS EKS Cluster inside a custom
 9. To define node groups(pools) ec2 instace type, number, ami,etc
 10. ELB instance inside our public subnet 
 
+## Network Configuration Diagram
+![alt text](https://github.com/limbuu/terraform-for-aws-eks-demo/blob/main/images/network-diagram-eks.png)
+
 ## Prerequisties
 * [Terraform CLI](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started)
 * [Kubectl CLI](https://kubernetes.io/docs/tasks/tools/) 
